@@ -1,0 +1,30 @@
+.input {
+    border: none;
+    outline: none;
+    background-color: #DAE1EC;
+    font-family: 'Inter';
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    width: 100%;
+    margin-right: 0px;
+}
+
+.input :focus {
+    outline: none;
+}
+
+.input-Container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    width: 300px;
+    color: #2E3B52;
+    background-color: #DAE1EC;
+    border-radius: 4px;
+}
+
+.icon {
+    margin-right: 10px;
+}
