@@ -1,3 +1,20 @@
 .App {
   background-color: #ffffff;
 }
+
+tr:nth-child(even) {
+  background-color: #F4F7FC;
+}
+
+th {
+  background-color: #F4F7FC!important;
+  color: #606F89!important;
+}
+
+.app-body {
+  margin: 30px;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #F4F7FC;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)
+}

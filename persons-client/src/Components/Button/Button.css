@@ -5,10 +5,11 @@
     flex-direction: row;
     align-items: center;
     padding: 10px;
+    font-weight: bold;
 }
 
-.primary :last-child {
-    margin-left: 10px;
+.primary :first-child {
+    margin-right: 10px;
 }
 
 
@@ -30,7 +31,8 @@ svg {
 }
 
 .secundary {
-    background-color: #ffffff;
+    background-color: #F4F7FC;
+
 }
 
 button svg path {
