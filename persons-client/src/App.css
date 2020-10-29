@@ -1,5 +1,9 @@
 .App {
-  background-color: #ffffff;
+  background-color: #F4F7FC;
+}
+
+body {
+  height: 0px!important;
 }
 
 tr:nth-child(even) {
@@ -23,4 +27,11 @@ th {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+@media only screen and (max-width: 600px){
+  .app-body {
+    padding: 20px;
+    margin: 0;
+  }
 }

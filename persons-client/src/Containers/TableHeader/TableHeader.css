@@ -17,3 +17,16 @@
 .table-options button{
     margin-right: 10px;
 }
+
+@media only screen and (max-width: 600px){
+    .table-header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 64px;
+        max-width: 400px; 
+    }
+    .table-options {
+         margin-bottom: 16px;
+         max-width: 80%;
+    }
+}

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import TableHeader from "../TableHeader/TableHeader";
 import Button from "../../Components/Button/Button";
-import Search  from "../../Components/Input/Search";
-import { Checkbox, Dropdown,  Menu,  Table } from "antd";
+import Search from "../../Components/Input/Search";
+import { Checkbox, Dropdown, Menu, Skeleton, Spin, Table, Tooltip, Typography } from "antd";
 import Highlighter from "react-highlight-words";
 import SubMenu from "antd/lib/menu/SubMenu";
-
+import { Link } from "react-router-dom";
+const {Text} = Typography
 
 export default class Content extends Component {
   constructor(props) {
@@ -176,38 +177,47 @@ export default class Content extends Component {
   };
 
   componentDidMount() {
-    this.setState({ isLoading: false, searchResult: this.state.dataSource });
+    setTimeout(() => {
+
+      this.setState({ isLoading: false, searchResult: this.state.dataSource });
+    }, 3000)
   }
 
   handleFilterClick = (e) => {
     this.setState({ visibleDropdown: !this.state.visibleDropdown });
   };
 
-
   render() {
     const columns = [
       {
-        title: "NAME",
+        title: () => <Text ellipsis>Nome</Text>,
         dataIndex: "name",
         key: "name",
-        render: (text) => (
-          <Highlighter
-            highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-            searchWords={[this.state.searchText]}
-            autoEscape
-            textToHighlight={text ? text.toString() : ""}
-          />
+        render: (text, record) => (
+          <Link to={`/person/${record.id}`}>{text}</Link>
         ),
       },
       {
-        title: "STATUS",
-        dataIndex: "age",
-        key: "age",
+        title: () => <Text ellipsis>Altura</Text>,
+        dataIndex: "height",
+        key: "height",
       },
       {
-        title: "Address",
-        dataIndex: "address",
-        key: "address",
+        title: () => <Text ellipsis>Peso</Text>,
+        dataIndex: "weight",
+        key: "weight",
+      },
+      {
+        title: () => <Text ellipsis>Atleta</Text>,
+        dataIndex: "athlete",
+        key: "athlete",
+        render: (isAthlete) => (isAthlete ? "Sim" : "Não"),
+      },
+      {
+        title: () => <Text ellipsis>Lactose</Text>,
+        dataIndex: "lactose",
+        key: "lactose",
+        render: (isLactose) => <Tooltip>{isLactose ? "Sim" : "Não"}</Tooltip>,
       },
     ];
 
@@ -289,9 +299,11 @@ export default class Content extends Component {
               onChange={this.handleInputChange}
             />
           </div>
-          <Button type="primary" icon="add">
-            Add Custumer
-          </Button>
+          <Link to="/person/new">
+            <Button type="primary" icon="add">
+              Adicionar Pessoa
+            </Button>
+          </Link>
         </TableHeader>
         <Table
           dataSource={
@@ -309,8 +321,9 @@ export default class Content extends Component {
               `Mostrando ${range[0]}-${range[1]} de ${total} registros`,
           }}
           loading={this.state.isLoading}
+          tableLayout="fixed"
         />
-      </div>
+        </div>
     );
   }
 }
