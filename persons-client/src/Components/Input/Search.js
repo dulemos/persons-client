@@ -1,5 +1,5 @@
 import React from "react";
-import "./Input.css";
+import "./Search.css";
 import Icons from "../Icons/Icons";
 
 class Search extends React.Component {

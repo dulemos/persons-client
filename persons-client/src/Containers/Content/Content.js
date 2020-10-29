@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import TableHeader from "../TableHeader/TableHeader";
 import Button from "../../Components/Button/Button";
-import Input from "../../Components/Input/Input";
-import { Table } from "antd";
+import Search  from "../../Components/Input/Search";
+import { Checkbox, Dropdown,  Menu,  Table } from "antd";
 import Highlighter from "react-highlight-words";
+import SubMenu from "antd/lib/menu/SubMenu";
+
 
 export default class Content extends Component {
   constructor(props) {
@@ -160,24 +162,27 @@ export default class Content extends Component {
 
       searchResult: null,
       searchText: "",
+      visibleDropdown: false,
     };
   }
 
   handleInputChange = async (e) => {
-
-
     let search = e.target.value;
 
-
-    const searchResult = await this.state.dataSource.filter(data => data.name.toLowerCase().includes(search.toLowerCase()))
-    this.setState({ searchResult })
-
-
+    const searchResult = await this.state.dataSource.filter((data) =>
+      data.name.toLowerCase().includes(search.toLowerCase())
+    );
+    this.setState({ searchResult });
   };
 
   componentDidMount() {
     this.setState({ isLoading: false, searchResult: this.state.dataSource });
   }
+
+  handleFilterClick = (e) => {
+    this.setState({ visibleDropdown: !this.state.visibleDropdown });
+  };
+
 
   render() {
     const columns = [
@@ -205,12 +210,79 @@ export default class Content extends Component {
         key: "address",
       },
     ];
+
+    const filterMenu = (
+      <Menu onClick={""}>
+        <SubMenu title="Peso">
+          <Menu.Item key="1">
+            <Checkbox onChange={"handleChange"}>
+              Pessoas abaixo do Peso.
+            </Checkbox>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Checkbox onChange={"handleChange"}>
+              Pessoas no peso ideal.
+            </Checkbox>
+          </Menu.Item>
+          <Menu.Item key="3">
+            <Checkbox onChange={"handleChange"}>
+              Pessoas acima do Peso.
+            </Checkbox>
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu title="Altura">
+          <Menu.Item key="4">
+            <Checkbox onChange={"handleChange"}>Pessoas baixas.</Checkbox>
+          </Menu.Item>
+          <Menu.Item key="5">
+            <Checkbox onChange={"handleChange"}>Pessoas medianas.</Checkbox>
+          </Menu.Item>
+          <Menu.Item key="6">
+            <Checkbox onChange={"handleChange"} />
+            Pessoas altas.
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu title="Lactose">
+          <Menu.Item key="7">
+            <Checkbox onChange={"handleChange"}>
+              Pessoas Intolerantes à lactose
+            </Checkbox>
+          </Menu.Item>
+          <Menu.Item key="8">
+            <Checkbox onChange={"handleChange"}>
+              Pessoas Tolerantes à lactose
+            </Checkbox>
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu title="Atletas">
+          <Menu.Item key="9">
+            <Checkbox onChange={"handleChange"}>Pessoas Atletas</Checkbox>
+          </Menu.Item>
+          <Menu.Item key="10">
+            <Checkbox onChange={"handleChange"}>Pessoas não atletas</Checkbox>
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Divider />
+        <Menu.Item>Remover Filtros</Menu.Item>
+      </Menu>
+    );
+
     return (
       <div className="app-body">
         <TableHeader>
           <div className="table-options">
-            <Button type="secundary" icon="filter" />
-            <Input
+            <Dropdown
+              overlay={filterMenu}
+              arrow
+              visible={this.state.visibleDropdown}
+            >
+              <Button
+                type="secundary"
+                icon="filter"
+                onClick={this.handleFilterClick}
+              />
+            </Dropdown>
+            <Search
               type="text"
               icon="search"
               placeholder="Pesquisar"
@@ -222,7 +294,11 @@ export default class Content extends Component {
           </Button>
         </TableHeader>
         <Table
-          dataSource={this.state.searchResult == null ? this.state.dataSource : this.state.searchResult}
+          dataSource={
+            this.state.searchResult == null
+              ? this.state.dataSource
+              : this.state.searchResult
+          }
           columns={columns}
           pagination={{
             size: "small",

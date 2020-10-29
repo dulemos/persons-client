@@ -13,7 +13,7 @@ class Button extends React.Component {
 
   render() {
     return (
-      <button className={`button ${this.props.type}`} width={this.props.width} heigth={this.props.heigth}>
+      <button className={`button ${this.props.type}`} width={this.props.width} heigth={this.props.heigth} onClick={this.props.onClick}>
         {this.props.icon && Icons[this.props.icon]}
         {this.props.children}
       </button>
