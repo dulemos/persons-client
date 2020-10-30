@@ -1,12 +1,21 @@
 import React, { Component } from "react";
 import TableHeader from "../TableHeader/TableHeader";
-import Button from "../../Components/Button/Button";
+import ButtonComponent from "../../Components/Button/Button";
+import {Button, Popconfirm} from 'antd';
 import Search from "../../Components/Input/Search";
-import { Checkbox, Dropdown, Menu, Skeleton, Spin, Table, Tooltip, Typography } from "antd";
-import Highlighter from "react-highlight-words";
+import {
+  Checkbox,
+  Dropdown,
+  Menu,
+  message,
+  Table,
+  Tooltip,
+  Typography,
+} from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
 import { Link } from "react-router-dom";
-const {Text} = Typography
+import * as api from "../../libs/api-lib";
+const { Text } = Typography;
 
 export default class Content extends Component {
   constructor(props) {
@@ -14,154 +23,8 @@ export default class Content extends Component {
 
     this.state = {
       isLoading: true,
-      dataSource: [
-        {
-          key: "1",
-          name: "Mike",
-          age: 32,
-          address: "10 Downing Street",
-        },
-        {
-          key: "2",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "3",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "4",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "5",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "6",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "7",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "8",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "9",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "10",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "11",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "12",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "13",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "14",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "15",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "15",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "16",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "17",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "18",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "19",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "20",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "21",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "22",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-        {
-          key: "23",
-          name: "John",
-          age: 42,
-          address: "10 Downing Street",
-        },
-      ],
-
       searchResult: null,
+      dataSource: [],
       searchText: "",
       visibleDropdown: false,
     };
@@ -176,16 +39,26 @@ export default class Content extends Component {
     this.setState({ searchResult });
   };
 
-  componentDidMount() {
-    setTimeout(() => {
-
-      this.setState({ isLoading: false, searchResult: this.state.dataSource });
-    }, 3000)
+  async componentDidMount() {
+    const response = await api.getAllPersons();
+    response.data
+      ? this.setState({ isLoading: false, dataSource: response.data })
+      : message.error(
+          "Ops, parece que algo deu errado. Tente novamente mais tarde."
+        );
   }
 
   handleFilterClick = (e) => {
     this.setState({ visibleDropdown: !this.state.visibleDropdown });
   };
+
+  handleDeleteConfirm = async (id) => {
+    const result = await api.deletePerson(id); 
+
+    result ? message.success("Deletado com sucesso.") : message.info("Ops, algo deu errado, tente novamente mais tarde")
+    const newDataSource = this.state.dataSource.filter((x) => x._id !== id);
+    this.setState({dataSource: newDataSource})
+  }
 
   render() {
     const columns = [
@@ -194,7 +67,7 @@ export default class Content extends Component {
         dataIndex: "name",
         key: "name",
         render: (text, record) => (
-          <Link to={`/person/${record.id}`}>{text}</Link>
+          <Link to={`/person/${record._id}`}>{text}</Link>
         ),
       },
       {
@@ -214,11 +87,30 @@ export default class Content extends Component {
         render: (isAthlete) => (isAthlete ? "Sim" : "Não"),
       },
       {
-        title: () => <Text ellipsis>Lactose</Text>,
+        title: () => (
+          <Tooltip title="Pessoa possui intolerância à lactose">
+            <Text ellipsis>Lactose</Text>
+          </Tooltip>
+        ),
         dataIndex: "lactose",
         key: "lactose",
-        render: (isLactose) => <Tooltip>{isLactose ? "Sim" : "Não"}</Tooltip>,
+        render: (isLactose) => (
+          isLactose ? "Sim" : "Não"
+        ),
       },
+      {
+        title: "",
+        render: (d, record) => (
+            <Link to={`/person/${record._id}`}><Button type="link">Editar</Button></Link>
+
+        ),
+        width: 100
+      },
+      {
+        title: "",
+        render: (d, record) => <Popconfirm title="Deseja mesmo excluir este registro?" okText="Sim" cancelText="Não" onConfirm={() => this.handleDeleteConfirm(record._id)}><Button type="link" danger>Excluir</Button></Popconfirm>,
+        width: 100
+      }
     ];
 
     const filterMenu = (
@@ -286,7 +178,7 @@ export default class Content extends Component {
               arrow
               visible={this.state.visibleDropdown}
             >
-              <Button
+              <ButtonComponent
                 type="secundary"
                 icon="filter"
                 onClick={this.handleFilterClick}
@@ -300,9 +192,9 @@ export default class Content extends Component {
             />
           </div>
           <Link to="/person/new">
-            <Button type="primary" icon="add">
+            <ButtonComponent type="primary" icon="add">
               Adicionar Pessoa
-            </Button>
+            </ButtonComponent>
           </Link>
         </TableHeader>
         <Table
@@ -322,8 +214,9 @@ export default class Content extends Component {
           }}
           loading={this.state.isLoading}
           tableLayout="fixed"
+          scroll={{ x: 1000, y: 500 }}
         />
-        </div>
+      </div>
     );
   }
 }
