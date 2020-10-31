@@ -1,20 +1,18 @@
 import React, { Component } from "react";
 import TableHeader from "../TableHeader/TableHeader";
 import ButtonComponent from "../../Components/Button/Button";
-import {Button, Popconfirm} from 'antd';
+import { Button, Popconfirm } from "antd";
 import Search from "../../Components/Input/Search";
 import {
-  Checkbox,
-  Dropdown,
-  Menu,
   message,
   Table,
   Tooltip,
   Typography,
 } from "antd";
-import SubMenu from "antd/lib/menu/SubMenu";
 import { Link } from "react-router-dom";
 import * as api from "../../libs/api-lib";
+import Icon from "@ant-design/icons";
+import Icons from '../../Components/Icons/Icons'
 const { Text } = Typography;
 
 export default class Content extends Component {
@@ -26,7 +24,6 @@ export default class Content extends Component {
       searchResult: null,
       dataSource: [],
       searchText: "",
-      visibleDropdown: false,
     };
   }
 
@@ -48,17 +45,17 @@ export default class Content extends Component {
         );
   }
 
-  handleFilterClick = (e) => {
-    this.setState({ visibleDropdown: !this.state.visibleDropdown });
-  };
 
   handleDeleteConfirm = async (id) => {
-    const result = await api.deletePerson(id); 
+    const result = await api.deletePerson(id);
 
-    result ? message.success("Deletado com sucesso.") : message.info("Ops, algo deu errado, tente novamente mais tarde")
+    result
+      ? message.success("Deletado com sucesso.")
+      : message.info("Ops, algo deu errado, tente novamente mais tarde");
     const newDataSource = this.state.dataSource.filter((x) => x._id !== id);
-    this.setState({dataSource: newDataSource})
-  }
+    this.setState({ dataSource: newDataSource });
+  };
+
 
   render() {
     const columns = [
@@ -74,17 +71,86 @@ export default class Content extends Component {
         title: () => <Text ellipsis>Altura</Text>,
         dataIndex: "height",
         key: "height",
+        filters: [
+          {
+            text: "Baixos",
+            value: 0,
+          },
+          {
+            text: "Medianos",
+            value: 1,
+          },
+          {
+            text: "Altos",
+            value: 2,
+          },
+        ],
+        filterMultiple: false,
+        filterIcon: (
+          <Icon component={() => Icons["filter"]} />
+        ),
+        onFilter:  (value, record) => {
+          switch (value) {
+            case 0:
+              return record.height <= 159;
+            case 1:
+              return record.height >= 160 && record.height <= 179;
+            case 2:
+              return record.height >= 180;
+            default:
+              break;
+          }
+        },
       },
       {
         title: () => <Text ellipsis>Peso</Text>,
         dataIndex: "weight",
         key: "weight",
+        filters: [
+          {
+            text: "Abaixo do Peso",
+            value: 0,
+          },
+          {
+            text: "Peso Ideal",
+            value: 1,
+          },
+          {
+            text: "Acima do Peso",
+            value: 2,
+          },
+        ],
+        filterMultiple: false,
+        filterIcon: (
+          <Icon component={() => Icons["filter"]} />
+        ),
+        onFilter: (value, record) => {
+          switch (value) {
+            case 0:
+              return record.weight <= 69;
+            case 1:
+              return record.weight >= 70 && record.weight <= 89;
+            case 2:
+              return record.weight >= 90;
+            default:
+              break;
+          }
+        },
       },
       {
         title: () => <Text ellipsis>Atleta</Text>,
         dataIndex: "athlete",
         key: "athlete",
         render: (isAthlete) => (isAthlete ? "Sim" : "Não"),
+        filters: [
+          {text: 'Sim', value: true},
+          {text: 'Não', value: false}
+        ],
+        filterMultiple: false,
+        filterIcon: (
+          <Icon component={() => Icons["filter"]} />
+        ),
+        onFilter: (value, record) => record.athlete === value 
       },
       {
         title: () => (
@@ -94,96 +160,50 @@ export default class Content extends Component {
         ),
         dataIndex: "lactose",
         key: "lactose",
-        render: (isLactose) => (
-          isLactose ? "Sim" : "Não"
+        render: (isLactose) => (isLactose ? "Sim" : "Não"),
+        filters: [
+          {text: 'Sim', value: true},
+          {text: 'Não', value: false}
+        ],
+        filterMultiple: false,
+        filterIcon: (
+          <Icon component={() => Icons["filter"]} />
         ),
+        onFilter: (value, record) => record.lactose === value 
       },
       {
         title: "",
         render: (d, record) => (
-            <Link to={`/person/${record._id}`}><Button type="link">Editar</Button></Link>
-
+          <Link to={`/person/${record._id}`}>
+            <Button type="link">Editar</Button>
+          </Link>
         ),
-        width: 100
+        width: 100,
       },
       {
         title: "",
-        render: (d, record) => <Popconfirm title="Deseja mesmo excluir este registro?" okText="Sim" cancelText="Não" onConfirm={() => this.handleDeleteConfirm(record._id)}><Button type="link" danger>Excluir</Button></Popconfirm>,
-        width: 100
-      }
+        render: (d, record) => (
+          <Popconfirm
+            title="Deseja mesmo excluir este registro?"
+            okText="Sim"
+            cancelText="Não"
+            onConfirm={() => this.handleDeleteConfirm(record._id)}
+          >
+            <Button type="link" danger>
+              Excluir
+            </Button>
+          </Popconfirm>
+        ),
+        width: 100,
+      },
     ];
 
-    const filterMenu = (
-      <Menu onClick={""}>
-        <SubMenu title="Peso">
-          <Menu.Item key="1">
-            <Checkbox onChange={"handleChange"}>
-              Pessoas abaixo do Peso.
-            </Checkbox>
-          </Menu.Item>
-          <Menu.Item key="2">
-            <Checkbox onChange={"handleChange"}>
-              Pessoas no peso ideal.
-            </Checkbox>
-          </Menu.Item>
-          <Menu.Item key="3">
-            <Checkbox onChange={"handleChange"}>
-              Pessoas acima do Peso.
-            </Checkbox>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu title="Altura">
-          <Menu.Item key="4">
-            <Checkbox onChange={"handleChange"}>Pessoas baixas.</Checkbox>
-          </Menu.Item>
-          <Menu.Item key="5">
-            <Checkbox onChange={"handleChange"}>Pessoas medianas.</Checkbox>
-          </Menu.Item>
-          <Menu.Item key="6">
-            <Checkbox onChange={"handleChange"} />
-            Pessoas altas.
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu title="Lactose">
-          <Menu.Item key="7">
-            <Checkbox onChange={"handleChange"}>
-              Pessoas Intolerantes à lactose
-            </Checkbox>
-          </Menu.Item>
-          <Menu.Item key="8">
-            <Checkbox onChange={"handleChange"}>
-              Pessoas Tolerantes à lactose
-            </Checkbox>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu title="Atletas">
-          <Menu.Item key="9">
-            <Checkbox onChange={"handleChange"}>Pessoas Atletas</Checkbox>
-          </Menu.Item>
-          <Menu.Item key="10">
-            <Checkbox onChange={"handleChange"}>Pessoas não atletas</Checkbox>
-          </Menu.Item>
-        </SubMenu>
-        <Menu.Divider />
-        <Menu.Item>Remover Filtros</Menu.Item>
-      </Menu>
-    );
+    
 
     return (
       <div className="app-body">
         <TableHeader>
           <div className="table-options">
-            <Dropdown
-              overlay={filterMenu}
-              arrow
-              visible={this.state.visibleDropdown}
-            >
-              <ButtonComponent
-                type="secundary"
-                icon="filter"
-                onClick={this.handleFilterClick}
-              />
-            </Dropdown>
             <Search
               type="text"
               icon="search"
